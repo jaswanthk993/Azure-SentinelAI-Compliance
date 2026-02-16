@@ -2,6 +2,12 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional, Any
+from dotenv import load_dotenv
+import os
+
+# Load environment variables
+load_dotenv()
+
 from agents import ScannerAgent, ComplianceAgent, RemediationAgent, ExecutiveAgent
 
 app = FastAPI(title="Azure SentinelAI Compliance API")
