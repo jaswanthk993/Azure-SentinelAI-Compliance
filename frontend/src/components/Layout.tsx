@@ -3,9 +3,17 @@ import { ShieldCheck, LayoutDashboard, FileText, Settings, Bell, User } from 'lu
 
 interface LayoutProps {
     children: React.ReactNode;
+    currentView: string;
+    onNavigate: (view: string) => void;
 }
 
-export const Layout: React.FC<LayoutProps> = ({ children }) => {
+export const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigate }) => {
+    const navItems = [
+        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+        { id: 'reports', label: 'Reports', icon: FileText },
+        { id: 'settings', label: 'Settings', icon: Settings },
+    ];
+
     return (
         <div className="flex h-screen bg-gray-50">
             {/* Sidebar */}
@@ -16,18 +24,19 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </div>
 
                 <nav className="flex-1 p-4 space-y-2">
-                    <a href="#" className="flex items-center gap-3 px-4 py-3 bg-blue-600 rounded-lg text-white shadow-sm">
-                        <LayoutDashboard className="h-5 w-5" />
-                        <span className="font-medium">Dashboard</span>
-                    </a>
-                    <a href="#" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
-                        <FileText className="h-5 w-5" />
-                        <span className="font-medium">Reports</span>
-                    </a>
-                    <a href="#" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
-                        <Settings className="h-5 w-5" />
-                        <span className="font-medium">Settings</span>
-                    </a>
+                    {navItems.map((item) => (
+                        <button
+                            key={item.id}
+                            onClick={() => onNavigate(item.id)}
+                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${currentView === item.id
+                                    ? 'bg-blue-600 text-white shadow-sm'
+                                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                                }`}
+                        >
+                            <item.icon className="h-5 w-5" />
+                            <span className="font-medium">{item.label}</span>
+                        </button>
+                    ))}
                 </nav>
 
                 <div className="p-4 border-t border-slate-800">
@@ -47,7 +56,11 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             <main className="flex-1 flex flex-col overflow-hidden">
                 {/* Header */}
                 <header className="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-8 shadow-sm">
-                    <h1 className="text-xl font-semibold text-gray-800">Compliance Overview</h1>
+                    <h1 className="text-xl font-semibold text-gray-800">
+                        {currentView === 'dashboard' && 'Compliance Overview'}
+                        {currentView === 'reports' && 'Audit Reports'}
+                        {currentView === 'settings' && 'System Settings'}
+                    </h1>
                     <div className="flex items-center gap-4">
                         <button className="p-2 text-gray-400 hover:text-gray-600">
                             <Bell className="h-5 w-5" />
