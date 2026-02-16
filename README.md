@@ -26,7 +26,6 @@ It uses a multi-agent AI system to:
 
 The system follows a modular **Multi-Agent Architecture**:
 
-```mermaid
 graph TD
     User[User / Dashboard] -->|Trigger Scan| API[FastAPI Backend]
     API -->|Dispatch| Scanner[🕵️ Scanner Agent]
