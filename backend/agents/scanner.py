@@ -4,8 +4,13 @@ from azure.mgmt.resourcegraph.models import QueryRequest
 
 class ScannerAgent:
     def __init__(self):
-        self.credential = DefaultAzureCredential()
-        self.client = ResourceGraphClient(self.credential)
+        try:
+            self.credential = DefaultAzureCredential()
+            self.client = ResourceGraphClient(self.credential)
+        except Exception as e:
+            print(f"Warning: Failed to initialize Azure credentials: {e}")
+            self.credential = None
+            self.client = None
 
     def scan(self, subscription_id: str):
         """
@@ -21,6 +26,10 @@ class ScannerAgent:
         has_errors = False
 
         for check_name, query in queries.items():
+            if not self.client:
+                has_errors = True
+                break
+                
             try:
                 request = QueryRequest(subscriptions=[subscription_id], query=query)
                 response = self.client.resources(request)

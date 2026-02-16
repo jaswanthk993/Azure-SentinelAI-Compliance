@@ -59,9 +59,24 @@ async def root():
 async def health_check():
     return {"status": "healthy"}
 
+from fastapi.responses import Response
+from utils.report_generator import ReportGenerator
+
+# ... (previous imports)
+
+# In-memory storage for latest scan (Demo only)
+latest_scan_result = {}
+
+# Initialize Report Generator
+report_gen = ReportGenerator()
+
 @app.post("/scan", response_model=ScanResponse)
 async def run_scan(request: ScanRequest):
+    global latest_scan_result
     try:
+        # ... (scanning logic) ...
+        # (This part is inside the function, we need to capture the response before returning)
+        
         # 1. Scan -> Scanner Agent
         print(f"Starting scan for subscription: {request.subscription_id}")
         raw_findings = scanner.scan(request.subscription_id)
@@ -82,7 +97,7 @@ async def run_scan(request: ScanRequest):
         print("Calculating risk score...")
         summary = executive.summarize(final_findings)
         
-        response = {
+        response_data = {
             "risk_score": summary["risk_score"],
             "status": summary["status"],
             "total_findings": summary["total_findings"],
@@ -90,11 +105,27 @@ async def run_scan(request: ScanRequest):
             "findings": final_findings
         }
         
-        return response
+        # Store for report generation
+        latest_scan_result = response_data
+        
+        return response_data
         
     except Exception as e:
         print(f"Error during scan: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/report")
+async def get_report():
+    if not latest_scan_result:
+        raise HTTPException(status_code=404, detail="No scan data available. Run a scan first.")
+    
+    pdf_bytes = report_gen.generate_pdf(latest_scan_result)
+    
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=compliance_report.pdf"}
+    )
 
 if __name__ == "__main__":
     import uvicorn
