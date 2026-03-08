@@ -104,7 +104,7 @@ npm run dev
 
 ---
 
-## 📊 Demo Flow
+## 📊 Process Flow
 1.  **"Scan Environment"**: User clicks the button.
 2.  **Agent Logs**: Watch the backend terminal to see agents "thinking".
 3.  **Risk Dashboard**: See the score drop/rise based on findings.
