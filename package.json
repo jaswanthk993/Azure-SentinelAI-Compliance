@@ -1,0 +1,10 @@
+{
+  "name": "azure-sentinelai-compliance-root",
+  "private": true,
+  "scripts": {
+    "install:frontend": "npm install --prefix frontend",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev": "npm run dev:frontend",
+    "setup": "npm run install:frontend"
+  }
+}
