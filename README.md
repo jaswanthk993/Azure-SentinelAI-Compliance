@@ -2,7 +2,7 @@
 
 > **Autonomous Multi-Agent System for Real-Time Cloud Compliance & Auditing**
 
-![Azure SentinelAI Banner](https://img.shields.io/badge/Status-Hackathon_Winner_Candidate-success?style=for-the-badge) ![Python](https://img.shields.io/badge/Backend-FastAPI-blue?style=flat-square) ![React](https://img.shields.io/badge/Frontend-React_Vite-61DAFB?style=flat-square) ![Azure](https://img.shields.io/badge/Cloud-Azure_OpenAI-0078D4?style=flat-square)
+![Azure SentinelAI Banner] ![Python](https://img.shields.io/badge/Backend-FastAPI-blue?style=flat-square) ![React](https://img.shields.io/badge/Frontend-React_Vite-61DAFB?style=flat-square) ![Azure](https://img.shields.io/badge/Cloud-Azure_OpenAI-0078D4?style=flat-square)
 
 ---
 
