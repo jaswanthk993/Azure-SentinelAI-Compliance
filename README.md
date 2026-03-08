@@ -6,7 +6,6 @@
 ![React](https://img.shields.io/badge/Frontend-React_+_Vite-61DAFB?style=flat-square)
 ![Azure](https://img.shields.io/badge/Cloud-Azure_OpenAI-0078D4?style=flat-square)
 ![TypeScript](https://img.shields.io/badge/Language-TypeScript-3178C6?style=flat-square)
-![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
 ---
 
