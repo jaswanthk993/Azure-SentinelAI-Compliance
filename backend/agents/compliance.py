@@ -1,5 +1,9 @@
 import os
-from openai import AzureOpenAI
+try:
+    from openai import AzureOpenAI
+except ImportError:
+    print("Warning: openai module not found.")
+    AzureOpenAI = None
 
 class ComplianceAgent:
     def __init__(self):
@@ -7,13 +11,17 @@ class ComplianceAgent:
         self.endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
         self.deployment = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4")
         
-        if self.api_key and self.endpoint:
-            self.client = AzureOpenAI(
-                api_key=self.api_key,
-                api_version="2023-05-15",
-                azure_endpoint=self.endpoint
-            )
-        else:
+        try:
+            if self.api_key and self.endpoint and AzureOpenAI:
+                self.client = AzureOpenAI(
+                    api_key=self.api_key,
+                    api_version="2023-05-15",
+                    azure_endpoint=self.endpoint
+                )
+            else:
+                self.client = None
+        except Exception as e:
+            print(f"Warning: Failed to initialize AzureOpenAI: {e}")
             self.client = None
 
     def map_to_frameworks(self, findings):

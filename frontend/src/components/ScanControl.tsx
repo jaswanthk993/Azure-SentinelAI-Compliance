@@ -24,7 +24,7 @@ export const ScanControl: React.FC<ScanControlProps> = ({ onScan, isLoading }) =
                         type="text"
                         value={subId}
                         onChange={(e) => setSubId(e.target.value)}
-                        placeholder="Enter Azure Subscription ID"
+                        placeholder="Enter Azure Subscription ID or type 'demo' for demo mode"
                         className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                         required
                     />

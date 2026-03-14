@@ -19,9 +19,11 @@ function App() {
   const [data, setData] = useState<ScanResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [lastSubId, setLastSubId] = useState('');
 
   const handleScan = async (subId: string) => {
     setLoading(true);
+    setLastSubId(subId);
     setError('');
     setData(null);
     try {
@@ -40,7 +42,11 @@ function App() {
       const result = await response.json();
       setData(result);
     } catch (err: any) {
-      setError(err.message || 'An error occurred');
+      if (err.message === 'Failed to fetch' || err instanceof TypeError) {
+        setError('Cannot connect to backend. Please ensure the backend server is running on port 8000.');
+      } else {
+        setError(err.message || 'Cannot connect to backend. Please ensure the backend server is running on port 8000.');
+      }
     } finally {
       setLoading(false);
     }
@@ -67,7 +73,7 @@ function App() {
 
           {data ? (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <Dashboard data={data} />
+              <Dashboard data={data} subId={lastSubId} />
               <ReportView data={data} />
             </div>
           ) : (

@@ -26,9 +26,11 @@ interface DashboardProps {
         critical_findings: number;
         findings: Finding[];
     };
+    subId: string;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ data }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ data, subId }) => {
+    const isLiveMode = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(subId);
     const chartData = [
         { name: 'Risk', value: 100 - data.risk_score },
         { name: 'Secure', value: data.risk_score },
@@ -37,6 +39,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ data }) => {
 
     return (
         <div className="space-y-6">
+            <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-gray-900">Scan Results</h2>
+                <div className={`px-4 py-1.5 rounded-full text-sm font-semibold border flex items-center gap-2 ${isLiveMode ? 'bg-green-50 text-green-700 border-green-200' : 'bg-blue-50 text-blue-700 border-blue-200'}`}>
+                    {isLiveMode ? <CheckCircle className="h-4 w-4" /> : <Activity className="h-4 w-4" />}
+                    {isLiveMode ? 'Live Mode' : 'Demo Mode'}
+                </div>
+            </div>
             {/* KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">

@@ -8,6 +8,7 @@ import FrameworkCard from "@/components/FrameworkCard";
 import SeverityBadge from "@/components/SeverityBadge";
 import { mockScan, mockIssues, frameworkStats } from "@/data/mockData";
 import { ComplianceScan, Severity } from "@/data/types";
+import { toast } from "sonner";
 
 const ScanningOverlay = () => (
   <motion.div
@@ -49,13 +50,63 @@ const Index = () => {
   const [scanning, setScanning] = useState(false);
   const [severityFilter, setSeverityFilter] = useState<Severity | "all">("all");
 
-  const startScan = () => {
+  const startScan = async () => {
     setScanning(true);
     setScan(null);
-    setTimeout(() => {
-      setScan(mockScan);
+
+    try {
+      const response = await fetch("http://localhost:8000/scan", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ subscription_id: "demo-sub-123" }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to connect to scanner API");
+      }
+
+      const backendData = await response.json();
+
+      const transformedIssues = backendData.findings.map((f: any, index: number) => ({
+        id: `issue-${index}`,
+        resourceId: f.resource_id || "Unknown",
+        resourceName: f.resource_name || "Unknown",
+        resourceType: "Azure Resource",
+        issueType: f.check,
+        severity: (f.severity || "medium").toLowerCase(),
+        complianceFrameworks: f.compliance ? Object.keys(f.compliance) : [],
+        businessImpact: f.details || "Potential security risk",
+        remediationCLI: f.remediation?.cli || "N/A",
+        remediationTerraform: f.remediation?.terraform || "N/A",
+        remediationSteps: f.remediation?.steps?.join("\n") || "No steps provided",
+        status: "open",
+      }));
+
+      const newScan: ComplianceScan = {
+        scanId: `scan-${Date.now()}`,
+        subscriptionId: "demo-sub-123",
+        subscriptionName: "Demo Subscription",
+        timestamp: new Date().toISOString(),
+        totalRiskScore: backendData.risk_score || 0,
+        issues: transformedIssues,
+        resourcesScanned: (backendData.total_findings || 5) * 3,
+        status: "completed",
+      };
+
+      setScan(newScan);
+      toast.success("Scan completed successfully");
+    } catch (error) {
+      console.error("Backend scan failed, falling back to mock data", error);
+      toast.error("Using offline mock data (backend unreachable)");
+      
+      setTimeout(() => {
+        setScan(mockScan);
+      }, 1000);
+    } finally {
       setScanning(false);
-    }, 3000);
+    }
   };
 
   const filteredIssues = scan?.issues.filter((i) => severityFilter === "all" || i.severity === severityFilter) ?? [];
@@ -139,6 +190,13 @@ const Index = () => {
         ) : scan ? (
           /* Dashboard */
           <div className="space-y-8">
+            <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-foreground tracking-tight">Scan Results</h2>
+                <div className={`px-4 py-1.5 rounded-full text-sm font-semibold border flex items-center gap-2 ${/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(scan.subscriptionId) ? 'bg-green-500/10 text-green-500 border-green-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20'}`}>
+                    {/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(scan.subscriptionId) ? <CheckCircle2 className="h-4 w-4" /> : <Activity className="h-4 w-4" />}
+                    {/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(scan.subscriptionId) ? 'Live Mode' : 'Demo Mode'}
+                </div>
+            </div>
             {/* Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <StatCard label="Resources Scanned" value={scan.resourcesScanned} icon={<Server className="w-5 h-5" />} delay={0.1} />

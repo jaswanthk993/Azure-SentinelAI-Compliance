@@ -59,16 +59,19 @@ async def root():
 async def health_check():
     return {"status": "healthy"}
 
-from fastapi.responses import Response
-from utils.report_generator import ReportGenerator
+try:
+    from fastapi.responses import Response
+    from utils.report_generator import ReportGenerator
+    # Initialize Report Generator
+    report_gen = ReportGenerator()
+except Exception as e:
+    print(f"Warning: Failed to initialize ReportGenerator: {e}")
+    report_gen = None
 
 # ... (previous imports)
 
 # In-memory storage for latest scan (Demo only)
 latest_scan_result = {}
-
-# Initialize Report Generator
-report_gen = ReportGenerator()
 
 @app.post("/scan", response_model=ScanResponse)
 async def run_scan(request: ScanRequest):
@@ -118,6 +121,9 @@ async def run_scan(request: ScanRequest):
 async def get_report():
     if not latest_scan_result:
         raise HTTPException(status_code=404, detail="No scan data available. Run a scan first.")
+    
+    if not report_gen:
+        raise HTTPException(status_code=501, detail="Report generation is not available. Check dependencies.")
     
     pdf_bytes = report_gen.generate_pdf(latest_scan_result)
     
