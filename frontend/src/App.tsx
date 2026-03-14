@@ -13,6 +13,7 @@ interface ScanResponse {
   total_findings: number;
   critical_findings: number;
   findings: any[];
+  scan_date?: string;
 }
 
 function App() {

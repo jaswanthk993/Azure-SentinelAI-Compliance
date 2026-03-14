@@ -31,7 +31,8 @@ class ReportGenerator:
 
         # Title
         elements.append(Paragraph(f"Azure SentinelAI Compliance Report", self.title_style))
-        elements.append(Paragraph(f"Date: {datetime.now().strftime('%B %d, %Y - %I:%M %p')}", self.styles['Normal']))
+        scan_date = scan_data.get('scan_date', datetime.now().strftime('%B %d, %Y - %I:%M %p'))
+        elements.append(Paragraph(f"Date: {scan_date}", self.styles['Normal']))
         elements.append(Spacer(1, 20))
 
         # Executive Summary

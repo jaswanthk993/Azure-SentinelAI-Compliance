@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from typing import List, Optional, Any
 from dotenv import load_dotenv
 import os
+from datetime import datetime
 
 # Load environment variables
 load_dotenv()
@@ -44,6 +45,7 @@ class ScanResponse(BaseModel):
     total_findings: int
     critical_findings: int
     findings: List[dict]
+    scan_date: Optional[str] = None
 
 # Initialize Agents
 scanner = ScannerAgent()
@@ -105,7 +107,8 @@ async def run_scan(request: ScanRequest):
             "status": summary["status"],
             "total_findings": summary["total_findings"],
             "critical_findings": summary["critical_findings"],
-            "findings": final_findings
+            "findings": final_findings,
+            "scan_date": datetime.now().strftime('%B %d, %Y - %I:%M %p')
         }
         
         # Store for report generation
