@@ -4,6 +4,7 @@ import { ScanControl } from './components/ScanControl';
 import { Dashboard } from './components/Dashboard';
 import { ReportView } from './components/ReportView';
 import { ReportsScreen, SettingsScreen } from './components/Screens';
+import API_BASE_URL from './config';
 
 // Mock type for the response
 interface ScanResponse {
@@ -27,7 +28,7 @@ function App() {
     setError('');
     setData(null);
     try {
-      const response = await fetch('http://localhost:8000/scan', {
+      const response = await fetch(`${API_BASE_URL}/scan`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

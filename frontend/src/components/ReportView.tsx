@@ -1,4 +1,5 @@
 import React from 'react';
+import API_BASE_URL from '../config';
 
 interface ReportViewProps {
     data: any;
@@ -7,7 +8,7 @@ interface ReportViewProps {
 export const ReportView: React.FC<ReportViewProps> = ({ data }) => {
     const handleDownload = async () => {
         try {
-            const response = await fetch('http://localhost:8000/report', {
+            const response = await fetch(`${API_BASE_URL}/report`, {
                 method: 'GET',
             });
 

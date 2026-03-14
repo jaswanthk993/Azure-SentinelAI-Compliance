@@ -1,22 +1,20 @@
 class ExecutiveAgent:
     def summarize(self, mapped_findings):
-        """
-        Calculates risk score and generates executive summary.
-        """
-        total_checks = len(mapped_findings)
-        high_risk = len([f for f in mapped_findings if f.get("severity") == "High" or f.get("severity") == "Critical"])
-        
-        # Simple score calculation
-        if total_checks == 0:
-            score = 100
-        else:
-            score = max(0, 100 - (high_risk * 20))
-
-        summary = {
-            "risk_score": score,
-            "total_findings": total_checks,
-            "critical_findings": high_risk,
-            "status": "Compliant" if score > 80 else "At Risk"
+        severity_weights = {
+            'Critical': 25,
+            'High': 15,
+            'Medium': 5,
+            'Low': 1
         }
-        
-        return summary
+        total_penalty = sum(
+            severity_weights.get(f.get('severity', 'Low'), 1)
+            for f in mapped_findings
+        )
+        score = max(0, 100 - min(total_penalty, 100))
+        critical = len([f for f in mapped_findings if f.get('severity') in ('Critical', 'High')])
+        return {
+            "risk_score": score,
+            "total_findings": len(mapped_findings),
+            "critical_findings": critical,
+            "status": "Compliant" if score >= 80 else "At Risk"
+        }
